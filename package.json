@@ -1,0 +1,30 @@
+{
+  "name": "mofron-comp-fdsplit",
+  "version": "0.0.3",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simpart/mofron-comp-fdsplit.git"
+  },
+  "dependencies": {
+    "mofron-comp-split" : "",
+    "mofron-event-click" : "",
+    "mofron-comp-clktext" : "",
+    "mofron-effect-hrzpos" : "",
+    "mofron-effect-size" : "",
+    "mofron-effect-style" : ""
+  },
+  "keywords": [
+    "front-end"
+  ],
+  "author": "simparts",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/simpart/mofron-comp-fdsplit/issues"
+  },
+  "homepage": "https://github.com/simpart/mofron-comp-fdsplit#readme"
+}

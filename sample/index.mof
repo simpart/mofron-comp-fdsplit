@@ -1,0 +1,8 @@
+<require>
+    <tag module="mofron-comp-fdsplit">Split</tag>
+</require>
+
+<Split ratio=(30,70)>
+    <div baseColor="#faf5f5"></div>
+    <div baseColor="#e6e6fa"></div>
+</Split>

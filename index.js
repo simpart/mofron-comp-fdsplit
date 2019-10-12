@@ -44,9 +44,9 @@ mf.comp.FdSplit = class extends Split {
                 new Switch({
 		    child: [ new Text({ text: "&laquo;" }), new Text({ text: "&raquo;" }) ],
 		    style: {
-		        "margin-top" : "0.2rem",
 			"position" : "absolute",
-			"right" : "0.2rem"
+			"top"      : "0.2rem",
+			"right"    : "0.2rem"
                     },
                     height: "1rem",
                 })
@@ -188,11 +188,13 @@ mf.comp.FdSplit = class extends Split {
                 this.child()[0].execEffect(2);
                 this.child()[1].execEffect(2);
                 this.border().execEffect(2);
+		this.switch().switching(1,false);
             } else if (false === prm) {
                 /* open split */
                 this.child()[0].execEffect(3);
                 this.child()[1].execEffect(3);
                 this.border().execEffect(3);
+		this.switch().switching(0,false);
             }
 	} catch (e) {
             console.error(e.stack);

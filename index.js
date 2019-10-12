@@ -5,6 +5,7 @@
  */
 const mf      = require('mofron');
 const Split   = require('mofron-comp-split');
+const Switch  = require('mofron-comp-clksw');
 const Click   = require('mofron-event-click');
 const Text    = require('mofron-comp-clktext');
 const HrzPos  = require('mofron-effect-hrzpos');
@@ -39,19 +40,19 @@ mf.comp.FdSplit = class extends Split {
     initDomConts () {
         try {
             super.initDomConts();
-	    this.switch(
-	        new Text({
-		    style: { "margin-top": "0.2rem" },
-		    text: "&laquo;", size: "0.5rem",
-		    effect: new HrzPos('right', '0.1rem')
-		}),
-		new Text({
-		    style: { "margin-top": "0.2rem" },
-		    text: "&raquo;", size: "0.5rem",
-		    effect: new HrzPos('right', '0.1rem')
-		})
-	    );
-	    this.foldWidth("0.5rem");
+            this.switch(
+                new Switch({
+		    child: [ new Text({ text: "&laquo;" }), new Text({ text: "&raquo;" }) ],
+		    style: {
+		        "margin-top" : "0.2rem",
+			"position" : "absolute",
+			"right" : "0.2rem"
+                    },
+                    height: "1rem",
+                })
+            );
+	    this.foldwid("0.5rem");
+	    this.draggable(false);
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -66,48 +67,47 @@ mf.comp.FdSplit = class extends Split {
     beforeRender () {
         try {
             super.beforeRender();
-            if (2 > this.child().length) {
-                return;
-	    }
-	    this.child()[0].child(this.switch());
-	    if (true === this.folding()) {
-                this.switch()[0].visible(false);
-	    } else {
-                this.switch()[1].visible(false);
-	    }
-
-            /* slide config */
-            this.child()[0].effect(
-	        new efSize({ width: this.child()[0].width(), eid:2, speed: 300 })
-	    );
-	    this.child()[0].effect(
-	        new efSize({ width: this.foldWidth().toString(), eid: 3, speed: 300 })
-	    );
-	    this.child()[1].effect(
-                new efSize({ width: this.ratio()[1]+'%', eid:2, speed: 300 })
-            );
-	    this.child()[1].effect(
-                new efSize({ eid:3, speed: 300, tag: "FdSplit" })
-            );
+            if (1 < this.child().length) {
+                this.child()[0].style({ "position" : "relative" });
+                this.child()[0].addChild(this.switch());
+            }
+            this.switch().beforeRender();
             
-            /* border config */
-	    let wid  = mf.func.getSize(this.border().width());
-            this.border().effect(
+	    if (2 > this.child().length) {
+                return;
+            }
+            
+            /* slide config */
+            this.child()[0].effect([
+		new efSize({ eid:2, tag: "FdSplit", width: this.foldwid() }),
+                new efSize({ eid:3, tag: "FdSplit", width: this.ratio()[0] + '%' })
+            ]);
+            this.child()[1].effect([
+                new efSize({ eid:2, tag: "FdSplit" }),
+                new efSize({ eid:3, tag: "FdSplit", width: this.ratio()[1] + '%' })
+            ]);
+            /* berder config */
+            this.border().effect([
 	        new efStyle({
-		    style: { "left": this.child()[0].width() }, eid: 2, speed: 300
-		})
-	    );
-            this.border().effect(
-	        new efStyle({
-		    style: { "left": this.foldWidth().toString() }, eid: 3, speed: 300
-		})
-	    );
+		    eid: 2, tag: "FdSplit", style: { "left": this.foldwid().toString() }
+		}),
+		new efStyle({ eid:3, tag: "FdSplit", style: { "left": this.ratio()[0] + '%' } })
+	    ]);
+
+	    if (null === this.speed()) {
+                this.speed(300);
+	    }
 	} catch (e) {
             console.error(e.stack);
             throw e;
 	}
     }
-
+    
+    /**
+     * set folding config
+     * 
+     * @type private
+     */
     afterRender () {
         try {
             super.afterRender();
@@ -123,90 +123,26 @@ mf.comp.FdSplit = class extends Split {
     /**
      * switch component
      * 
-     * @param (component) open state switch component
-     * @param (component) close state switch component
-     * @return (array) [open comp, close comp]
+     * @param (mofron-comp-switch) folding switch component
+     * @return (mofron-comp-switch) folding switch component
      * @type parameter
      */
-    switch (opn, cls) {
+    switch (prm) {
         try {
-	    if (undefined === opn) {
-                /* getter */
-		return [this.openSwitch(), this.closeSwitch()];
+	    if (true === mf.func.isInclude(prm,"Switch")) {
+	        let sw_evt = (s1,s2,s3) => {
+                    try { s3.folding(!s3.folding()); } catch (e) {
+                        console.error(e.stack);
+			throw e;
+		    }
+		}
+                prm.switchEvent(sw_evt,this);
 	    }
-	    /* setter */
-	    this.openSwitch(opn);
-	    this.closeSwitch(cls);
+	    return this.innerComp("switch", prm);
 	} catch (e) {
             console.error(e.stack);
             throw e;
 	}
-    }
-    
-    /**
-     * open state switch component
-     * 
-     * @param (component) open state switch component
-     * @return (component) open state switch component
-     * @type parameter
-     */
-    openSwitch (prm) {
-        try {
-            if (undefined !== prm) {
-                prm.option({
-                    event: new Click([
-		        (cp1,cp2,cp3) => { cp3.folding(true); },
-			this
-		    ])
-                });
-            }
-            return this.innerComp("openSwitch",prm, mf.Component);
-	} catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    /**
-     * close state switch component
-     * 
-     * @param (component) close state switch component
-     * @return (component) close state switch component
-     * @type parameter
-     */
-    closeSwitch (prm) {
-        try {
-            if (undefined !== prm) {
-                prm.option({
-                    event: new Click([
-		        (cp1,cp2,cp3) => {
-                            cp3.folding(false);
-		        },
-			this
-		    ]),
-                });
-            }
-            return this.innerComp("closeSwitch",prm, mf.Component);
-	} catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    /**
-     * folding width
-     * 
-     * @param (string (size)) folding width (default 0.5rem)
-     * @return (string (size)) folding width
-     * @type parameter
-     */
-    foldWidth (prm) {
-        try {
-            return this.member("foldWidth", "size", prm);
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
     }
     
     /**
@@ -224,7 +160,6 @@ mf.comp.FdSplit = class extends Split {
                 this.foldConf(prm);
 	    }
             return ret;
-
 	} catch (e) {
             console.error(e.stack);
             throw e;
@@ -240,48 +175,42 @@ mf.comp.FdSplit = class extends Split {
      */
     foldConf (prm) {
         try {
-	    let fds = this;
+            let cchd = this.child()[0].child();
+            for (let cchd_idx=1; cchd_idx < cchd.length ; cchd_idx++) {
+                cchd[cchd_idx].visible(!prm);
+	    }
+            
             if (true === prm) {
                 /* close split */
-                /* change switch contents */
-                this.openSwitch().visible(
-                    false,
-                    () => {
-                        try {
-                            fds.closeSwitch().visible(true);
-                        } catch (e) {
-                            console.error(e.stack);
-                            throw e;
-                        }
-                    }
-                );
-                this.child()[0].execEffect(3);
-                this.child()[1].execEffect(3);
-                this.border().execEffect(3);
-            } else if (false === prm) {
-                /* open split */
-                /* change switch contents */
-                this.closeSwitch().visible(
-                    false,
-                    () => {
-                        try {
-                            fds.openSwitch().visible(true);
-                        } catch (e) {
-                            console.error(e.stack);
-                            throw e;
-                        }
-                    }
-                );
                 this.child()[0].execEffect(2);
                 this.child()[1].execEffect(2);
                 this.border().execEffect(2);
+            } else if (false === prm) {
+                /* open split */
+                this.child()[0].execEffect(3);
+                this.child()[1].execEffect(3);
+                this.border().execEffect(3);
             }
 	} catch (e) {
             console.error(e.stack);
 	    throw e;
 	}
     }
-
+    
+    /**
+     * width for folding status
+     * 
+     * @param (string (size)) folding width
+     * @return (string (size)) folding width 
+     * @type parameter
+     */
+    foldwid (prm) {
+        try { return this.member("foldwid", "size", prm); } catch (e) {
+            console.error(e.stack);
+	    throw e;
+	}
+    }
+    
     /**
      * split width
      * 
@@ -291,25 +220,41 @@ mf.comp.FdSplit = class extends Split {
      */
     width (prm, opt) {
         try {
-            let ret = super.width(prm, opt);
-            if ( (undefined !== prm) &&
-                 (1 < this.child().length) ) {
-                /* setter */
-                /* folding config for child[1] */
-                let eff_siz = this.child()[1].effect(["Size", "FdSplit"]);
-                if (null !== eff_siz) {
-		    let chd1_wid = mf.func.sizeDiff(prm, this.foldWidth().toPxnum()+'px');
-                    eff_siz.width(chd1_wid);
-		    if (true === this.folding()) {
-                        this.child()[1].width(chd1_wid);
-		    }
-                }
-            }
+	    let ret = super.width(prm, opt);
+            if ( (undefined !== prm) && (1 < this.child().length) ) {
+                this.child()[1].effectOpt(
+		    { width: mf.func.sizeDiff(prm, this.foldwid() )},
+		    { eid:2, tag: "FdSplit" }
+		);
+	    }
             return ret;
         } catch (e) {
             console.error(e.stack);
             throw e;
         }
+    }
+    
+    /**
+     * folding speed
+     * 
+     * @param (number) folding speed
+     * @return (number) folding speed
+     * @type parameter
+     */
+    speed (prm) {
+        try {
+            if (undefined === prm) {
+                /* getter */
+                return this.child()[0].effectOpt({ speed:prm }, { tag: "FdSplit" });
+	    }
+	    /* setter */
+            this.child()[0].effectOpt({ speed:prm }, { tag: "FdSplit" });
+            this.child()[1].effectOpt({ speed:prm }, { tag: "FdSplit" });
+	    this.border().effectOpt({ speed:prm }, { tag: "FdSplit" });
+	} catch (e) {
+	    console.error(e.stack);
+	    throw e;
+	}
     }
 }
 module.exports = mf.comp.FdSplit;

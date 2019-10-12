@@ -24,12 +24,10 @@ npm install mofron mofron-comp-fdsplit
 
 |Simple<br>Param | Parameter Name | Type | Description |
 |:--------------:|:---------------|:-----|:------------|
-| | switch | component | open state switch component |
-| | | component | close state switch component |
-| | openSwitch | component | open state switch component |
-| | closeSwitch | component | close state switch component |
-| | foldWidth | string (size) | folding width (default 0.5rem) |
+| | switch | mofron-comp-switch | folding switch component |
 | | folding | boolean | true: folding split component |
 | | | | false: unfolding split component |
+| | foldwid | string (size) | folding width |
 | | width | string (size) | split width |
+| | speed | number | folding speed |
 

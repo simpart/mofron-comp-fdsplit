@@ -176,7 +176,10 @@ mf.comp.FdSplit = class extends Split {
     foldConf (prm) {
         try {
             let cchd = this.child()[0].child();
-            for (let cchd_idx=1; cchd_idx < cchd.length ; cchd_idx++) {
+            for (let cchd_idx=0; cchd_idx < cchd.length ; cchd_idx++) {
+	        if (cchd_idx === cchd.length-1) {
+                    break;
+		}
                 cchd[cchd_idx].visible(!prm);
 	    }
             

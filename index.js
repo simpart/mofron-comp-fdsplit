@@ -40,19 +40,24 @@ mf.comp.FdSplit = class extends Split {
     initDomConts () {
         try {
             super.initDomConts();
+	    
+            /* set switch component */
             this.switch(
                 new Switch({
 		    child: [ new Text({ text: "&laquo;" }), new Text({ text: "&raquo;" }) ],
 		    style: {
 			"position" : "absolute",
-			"top"      : "0.2rem",
-			"right"    : "0.2rem"
+			"top"   : "0.2rem",
+			"right" : "0.2rem"
                     },
                     height: "1rem",
                 })
             );
+	    
+            /* set folding config */
 	    this.foldwid("0.5rem");
 	    this.draggable(false);
+	    this.foldingEvent(this.foldConf);
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -67,15 +72,13 @@ mf.comp.FdSplit = class extends Split {
     beforeRender () {
         try {
             super.beforeRender();
-            if (1 < this.child().length) {
-                this.child()[0].style({ "position" : "relative" });
-                this.child()[0].addChild(this.switch());
+            if (2 > this.child().length) {
+	        return;
             }
+
+            this.child()[0].style({ "position" : "relative" });
+            this.child()[0].addChild(this.switch());
             this.switch().beforeRender();
-            
-	    if (2 > this.child().length) {
-                return;
-            }
             
             /* slide config */
             this.child()[0].effect([
@@ -112,7 +115,7 @@ mf.comp.FdSplit = class extends Split {
         try {
             super.afterRender();
             if (true === this.folding()) {
-                this.foldConf(true);
+                this.foldConf(this, true);
 	    }
 	}  catch (e) {
             console.error(e.stack);
@@ -155,12 +158,34 @@ mf.comp.FdSplit = class extends Split {
      */
     folding (prm) {
         try {
-            let ret = this.member("folding", "boolean", prm, false);
-            if ((undefined !== prm) && (true === this.target().isPushed())) {
-                this.foldConf(prm);
+            if ((undefined !== prm) && (this.folding() !== prm)) {
+                let evt = this.foldingEvent();
+		for (let eidx in evt) {
+                    evt[eidx][0](this, prm, evt[eidx][1]);
+		}
 	    }
-            return ret;
+            return this.member("folding", "boolean", prm, false);
 	} catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    /**
+     * 
+     */
+    foldingEvent (fnc, prm) {
+        try {
+            if ( (undefined !== fnc) &&
+                 ('function' !== typeof fnc) ) {
+                throw new Error('invalid parameter');
+            }
+            return this.arrayMember(
+                "foldingEvent",
+                "object",
+                (undefined !== fnc) ? [fnc,prm] : undefined
+            );
+        } catch (e) {
             console.error(e.stack);
             throw e;
         }
@@ -169,32 +194,34 @@ mf.comp.FdSplit = class extends Split {
     /**
      * folding configure
      * 
+     * @param (mofron-comp-fdsplit) this component object
      * @param (boolean) true: folding split
      *                  false: unfolding split
-     * @type function
+     * @type private
      */
-    foldConf (prm) {
+    foldConf (fds, fld) {
         try {
-            let cchd = this.child()[0].child();
+	    /* left side child visible is false */
+            let cchd = fds.child()[0].child();
             for (let cchd_idx=0; cchd_idx < cchd.length ; cchd_idx++) {
 	        if (cchd_idx === cchd.length-1) {
                     break;
 		}
-                cchd[cchd_idx].visible(!prm);
+                cchd[cchd_idx].visible(!fld);
 	    }
             
-            if (true === prm) {
+            if (true === fld) {
                 /* close split */
-                this.child()[0].execEffect(2);
-                this.child()[1].execEffect(2);
-                this.border().execEffect(2);
-		this.switch().switching(1,false);
-            } else if (false === prm) {
+                fds.child()[0].execEffect(2);
+                fds.child()[1].execEffect(2);
+                fds.border().execEffect(2);
+		fds.switch().switching(1);
+            } else {
                 /* open split */
-                this.child()[0].execEffect(3);
-                this.child()[1].execEffect(3);
-                this.border().execEffect(3);
-		this.switch().switching(0,false);
+                fds.child()[0].execEffect(3);
+                fds.child()[1].execEffect(3);
+                fds.border().execEffect(3);
+		fds.switch().switching(0);
             }
 	} catch (e) {
             console.error(e.stack);
@@ -225,14 +252,15 @@ mf.comp.FdSplit = class extends Split {
      */
     width (prm, opt) {
         try {
-	    let ret = super.width(prm, opt);
-            if ( (undefined !== prm) && (1 < this.child().length) ) {
-                this.child()[1].effectOpt(
-		    { width: mf.func.sizeDiff(prm, this.foldwid() )},
-		    { eid:2, tag: "FdSplit" }
-		);
+	    if ( (undefined !== prm) && (1 < this.child().length) ) {
+	        try {
+                    this.child()[1].effectOpt(
+                        { width: mf.func.sizeDiff(prm, this.foldwid()) },
+			{ eid:2, tag: "FdSplit" }
+		    );
+		} catch (e) {}
 	    }
-            return ret;
+	    return super.width();
         } catch (e) {
             console.error(e.stack);
             throw e;

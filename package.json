@@ -1,6 +1,6 @@
 {
   "name": "mofron-comp-fdsplit",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,7 @@
   "dependencies": {
     "mofron-comp-split" : "",
     "mofron-event-click" : "",
+    "mofron-comp-clksw" : "",
     "mofron-comp-clktext" : "",
     "mofron-effect-hrzpos" : "",
     "mofron-effect-size" : "",

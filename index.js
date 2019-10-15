@@ -172,7 +172,12 @@ mf.comp.FdSplit = class extends Split {
     }
     
     /**
-     * 
+     * folding event function
+     *
+     * @param (function) event function
+     * @param (mixed) event parameter
+     * @return (array) [function, param]
+     * @type parameter
      */
     foldingEvent (fnc, prm) {
         try {

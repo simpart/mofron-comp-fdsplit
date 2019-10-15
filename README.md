@@ -27,6 +27,8 @@ npm install mofron mofron-comp-fdsplit
 | | switch | mofron-comp-switch | folding switch component |
 | | folding | boolean | true: folding split component |
 | | | | false: unfolding split component |
+| | foldingEvent | function | event function |
+| | | mixed | event parameter |
 | | foldwid | string (size) | folding width |
 | | width | string (size) | split width |
 | | speed | number | folding speed |

@@ -172,12 +172,7 @@ mf.comp.FdSplit = class extends Split {
     }
     
     /**
-     * folding event function
-     *
-     * @param (function) event function
-     * @param (mixed) event parameter
-     * @return (array) [function, param]
-     * @type parameter
+     * 
      */
     foldingEvent (fnc, prm) {
         try {
@@ -220,13 +215,13 @@ mf.comp.FdSplit = class extends Split {
                 fds.child()[0].execEffect(2);
                 fds.child()[1].execEffect(2);
                 fds.border().execEffect(2);
-		fds.switch().switching(1);
+		fds.switch().switching(1,false);
             } else {
                 /* open split */
                 fds.child()[0].execEffect(3);
                 fds.child()[1].execEffect(3);
                 fds.border().execEffect(3);
-		fds.switch().switching(0);
+		fds.switch().switching(0,false);
             }
 	} catch (e) {
             console.error(e.stack);
@@ -259,8 +254,9 @@ mf.comp.FdSplit = class extends Split {
         try {
 	    if ( (undefined !== prm) && (1 < this.child().length) ) {
 	        try {
+		    let fdwid = (0 === this.foldwid().value()) ? "1px" : this.foldwid();
                     this.child()[1].effectOpt(
-                        { width: mf.func.sizeDiff(prm, this.foldwid()) },
+                        { width: mf.func.sizeDiff(prm,fdwid) },
 			{ eid:2, tag: "FdSplit" }
 		    );
 		} catch (e) {}
